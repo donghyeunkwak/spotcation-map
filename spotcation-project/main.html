@@ -3,93 +3,197 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Spotcation 피드</title>
+  <title>Spotcation - 메인</title>
   <style>
-    body {
+    html, body {
+      height: 100%;
       margin: 0;
+      padding: 0;
       font-family: 'Pretendard', sans-serif;
-      background-color: #f5f8fb;
     }
 
-    header {
-      background-color: #0074e9;
-      color: white;
-      padding: 1rem;
-      font-size: 1.2rem;
-      font-weight: bold;
-      text-align: center;
+    #map {
+      height: 100%;
+      width: 100%;
+      position: absolute;
+      top: 52px;
+      left: 0;
+      z-index: 0;
     }
 
-    .feed-container {
-      padding: 1rem;
-      max-width: 600px;
-      margin: 0 auto;
+    .topbar {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 52px;
+      padding: 0 16px;
+      background-color: white;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      z-index: 1003;
+      box-shadow: 0 1px 4px rgba(0,0,0,0.05);
     }
 
-    .feed-post {
-      background: white;
-      border-radius: 12px;
-      padding: 1rem;
-      margin-bottom: 1.2rem;
-      box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+    .topbar .logo {
+      height: 26px;
+      object-fit: contain;
     }
 
-    .feed-post h3 {
-      margin: 0 0 0.5rem 0;
-      font-size: 1rem;
-      color: #0074e9;
+    .topbar .bell {
+      height: 24px;
+      width: 24px;
+      object-fit: contain;
+      cursor: pointer;
     }
 
-    .feed-post p {
-      margin: 0;
-      font-size: 0.95rem;
-      color: #333;
+    .nav-center-button {
+      position: fixed;
+      bottom: 30px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 64px;
+      height: 64px;
+      z-index: 1001;
+      cursor: pointer;
     }
 
-    .bottom-nav {
+    .nav-center-button img {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+    }
+
+    .navbar-img {
       position: fixed;
       bottom: 0;
       left: 0;
-      right: 0;
-      display: flex;
-      justify-content: space-around;
-      background-color: white;
-      border-top: 1px solid #ddd;
-      padding: 0.8rem 0;
+      width: 100%;
+      height: 80px;
+      object-fit: cover;
+      z-index: 1000;
     }
 
-    .bottom-nav button {
-      background: none;
-      border: none;
-      font-size: 1rem;
-      color: #0074e9;
-      font-weight: bold;
+    .nav-btn {
+      position: fixed;
+      bottom: 18px;
+      width: 28px;
+      height: 28px;
+      z-index: 1002;
       cursor: pointer;
     }
+
+    .nav-btn img {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+    }
+
+    .nav-home    { left: 10%; }
+    .nav-world   { left: 30%; }
+    .nav-search  { right: 30%; }
+    .nav-profile { right: 10%; }
   </style>
 </head>
 <body>
 
-  <header>Spotcation 피드</header>
-
-  <div class="feed-container">
-    <div class="feed-post">
-      <h3>@donghyun</h3>
-      <p>오늘 한강에서 여유롭게 산책하면서 찍은 사진이에요. 날씨 짱좋음 🌤</p>
-    </div>
-    <div class="feed-post">
-      <h3>@sometraveler</h3>
-      <p>강릉 커피거리 진짜 미쳤다... 해변뷰에 커피 한잔 완벽 🤍</p>
-    </div>
-    <!-- 더미 게시물은 JS로 불러오면 되고, 지금은 정적 구성 -->
+  <!-- 상단 탑바 -->
+  <div class="topbar">
+    <img src="mnt/data/spotcation.png" alt="Spotcation 로고" class="logo" />
+    <img src="mnt/data/bell-icon.png" alt="알림" class="bell" />
   </div>
 
-  <div class="bottom-nav">
-    <button>홈</button>
-    <button>지도</button>
-    <button>내 스팟</button>
-    <button>마이페이지</button>
+  <!-- 지도 -->
+  <div id="map"></div>
+
+  <!-- 플로팅 버튼 -->
+  <div class="nav-center-button" onclick="goToCreateSpot()">
+    <img src="mnt/data/center-button.png" alt="스팟 생성" />
   </div>
 
+  <!-- 네비게이션 바 배경 -->
+  <img class="navbar-img" src="mnt/data/navbar-bg.png" alt="하단 바" />
+
+  <!-- 버튼들 -->
+  <div class="nav-btn nav-home" onclick="goTo('home')">
+    <img src="mnt/data/home.png" alt="홈" />
+  </div>
+  <div class="nav-btn nav-world" onclick="goTo('world')">
+    <img src="mnt/data/world.png" alt="월드" />
+  </div>
+  <div class="nav-btn nav-search" onclick="goTo('search')">
+    <img src="mnt/data/search.png" alt="검색" />
+  </div>
+  <div class="nav-btn nav-profile" onclick="goTo('profile')">
+    <img src="mnt/data/profile.png" alt="프로필" />
+  </div>
+
+  <!-- 지도 스크립트 -->
+  <script>
+    let map;
+
+    function initMap() {
+      map = new google.maps.Map(document.getElementById("map"), {
+        center: { lat: 37.5665, lng: 126.9780 },
+        zoom: 15,
+        disableDefaultUI: true,
+        styles: [
+          {
+            elementType: "labels.icon",
+            stylers: [{ visibility: "off" }]
+          },
+          {
+            elementType: "labels.text.fill",
+            stylers: [{ visibility: "off" }]
+          },
+          {
+            elementType: "labels.text.stroke",
+            stylers: [{ visibility: "off" }]
+          }
+        ]
+      });
+
+      if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition(
+          (position) => {
+            const pos = {
+              lat: position.coords.latitude,
+              lng: position.coords.longitude
+            };
+            console.log("✅ 위치 받아옴:", pos);
+            map.setCenter(pos);
+
+            new google.maps.Marker({
+              position: pos,
+              map: map,
+              title: "현재 위치",
+              icon: "mnt/data/current-location.png" // 🔄 사용자 아이콘으로 교체됨
+            });
+          },
+          (error) => {
+            console.error("❌ 위치 오류:", error);
+            alert(`위치 오류 발생: ${error.message}`);
+          }
+        );
+      } else {
+        console.warn("❌ 이 브라우저는 Geolocation을 지원하지 않습니다.");
+      }
+    }
+
+    function goToCreateSpot() {
+      window.location.href = "spotCreate.html";
+    }
+
+    function goTo(page) {
+      alert(`${page}로 이동`);
+    }
+  </script>
+
+  <!-- Google Maps API -->
+  <script
+    src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAgZyXb3d5ZtAv03EPyf9OVvu51cvTCqQw&callback=initMap"
+    async defer>
+  </script>
 </body>
 </html>
