@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Spotcation 로그인</title>
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      font-family: 'Pretendard', sans-serif;
+      background: linear-gradient(to bottom, #d2e9ff, #ffffff);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+    }
+
+    .logo {
+      text-align: center;
+      margin-bottom: 2rem;
+      width: 80%;
+      max-width: 320px;
+    }
+
+    .logo img {
+      width: 100%;
+      height: auto;
+    }
+
+    .input-box {
+      width: 80%;
+      max-width: 320px;
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+    }
+
+    input {
+      padding: 0.8rem 1rem;
+      border-radius: 12px;
+      border: none;
+      background-color: #f5f5f5;
+      font-size: 1rem;
+    }
+
+    .login-btn {
+      margin-top: 1rem;
+      padding: 0.8rem;
+      border: none;
+      background-color: white;
+      border-radius: 12px;
+      font-weight: bold;
+      font-size: 1rem;
+      color: #0074e9;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+      cursor: pointer;
+    }
+
+    .links {
+      display: flex;
+      justify-content: center;
+      gap: 1rem;
+      font-size: 0.85rem;
+      color: #999;
+      margin-top: 1rem;
+    }
+
+    .google-login {
+      margin-top: 2rem;
+      padding: 0.8rem;
+      width: 80%;
+      max-width: 320px;
+      border: none;
+      background-color: white;
+      border-radius: 12px;
+      font-size: 1rem;
+      font-weight: bold;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+      cursor: pointer;
+      margin-left: auto;
+      margin-right: auto;
+    }
+
+    .google-login img {
+      width: 20px;
+      height: 20px;
+    }
+  </style>
+</head>
+<body>
+  <div class="logo">
+    <img src="data/logo.png" alt="Spotcation logo" />
+  </div>
+
+  <div class="input-box">
+    <input type="email" id="email" placeholder="이메일" autocomplete="email" />
+    <input type="password" id="password" placeholder="비밀번호" autocomplete="new-password" />
+    <button class="login-btn" onclick="login()">로그인</button>
+    <div class="links">
+        <a href="signup.html" style="color: #0074e9; text-decoration: none; font-weight: bold;">회원가입</a> |
+        <span onclick="alert('아직 구현되지 않았습니다.')">아이디 찾기</span> |
+        <span onclick="alert('아직 구현되지 않았습니다.')">비밀번호 찾기</span>
+      </div>
+      
+    <button class="google-login" onclick="alert('구글 로그인 기능은 아직 구현되지 않았습니다.')">
+      <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" alt="Google logo" />
+      구글로 로그인
+    </button>
+  </div>
+
+  <script>
+    async function login() {
+      const email = document.getElementById('email').value;
+      const password = document.getElementById('password').value;
+
+      if (!email || !password) {
+        alert('이메일과 비밀번호를 입력해주세요.');
+        return;
+      }
+
+      const formData = new FormData();
+      formData.append('email', email);
+      formData.append('password', password);
+
+      try {
+        const res = await fetch('https://script.google.com/macros/s/AKfycby7jAKGUx16L2CWsAhBYHFnUaqjEAx-lRJWNoPZ4UkaQU331ku0_fbOi3zOKSFGiTA4AQ/exec', {
+          method: 'POST',
+          body: formData,
+        });
+
+        const result = await res.json();
+        console.log('서버 응답:', result);
+
+        if (result.success) {
+          alert('로그인 성공!');
+          window.location.href = "main.html";
+        } else {
+          alert('이메일 또는 비밀번호가 잘못되었습니다.');
+        }
+      } catch (err) {
+        alert('로그인 중 오류가 발생했습니다.');
+        console.error('fetch 에러:', err);
+      }
+    }
+  </script>
+</body>
+</html>
