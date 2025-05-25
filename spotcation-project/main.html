@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Spotcation 피드</title>
+  <style>
+    body {
+      margin: 0;
+      font-family: 'Pretendard', sans-serif;
+      background-color: #f5f8fb;
+    }
+
+    header {
+      background-color: #0074e9;
+      color: white;
+      padding: 1rem;
+      font-size: 1.2rem;
+      font-weight: bold;
+      text-align: center;
+    }
+
+    .feed-container {
+      padding: 1rem;
+      max-width: 600px;
+      margin: 0 auto;
+    }
+
+    .feed-post {
+      background: white;
+      border-radius: 12px;
+      padding: 1rem;
+      margin-bottom: 1.2rem;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+    }
+
+    .feed-post h3 {
+      margin: 0 0 0.5rem 0;
+      font-size: 1rem;
+      color: #0074e9;
+    }
+
+    .feed-post p {
+      margin: 0;
+      font-size: 0.95rem;
+      color: #333;
+    }
+
+    .bottom-nav {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      display: flex;
+      justify-content: space-around;
+      background-color: white;
+      border-top: 1px solid #ddd;
+      padding: 0.8rem 0;
+    }
+
+    .bottom-nav button {
+      background: none;
+      border: none;
+      font-size: 1rem;
+      color: #0074e9;
+      font-weight: bold;
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+
+  <header>Spotcation 피드</header>
+
+  <div class="feed-container">
+    <div class="feed-post">
+      <h3>@donghyun</h3>
+      <p>오늘 한강에서 여유롭게 산책하면서 찍은 사진이에요. 날씨 짱좋음 🌤</p>
+    </div>
+    <div class="feed-post">
+      <h3>@sometraveler</h3>
+      <p>강릉 커피거리 진짜 미쳤다... 해변뷰에 커피 한잔 완벽 🤍</p>
+    </div>
+    <!-- 더미 게시물은 JS로 불러오면 되고, 지금은 정적 구성 -->
+  </div>
+
+  <div class="bottom-nav">
+    <button>홈</button>
+    <button>지도</button>
+    <button>내 스팟</button>
+    <button>마이페이지</button>
+  </div>
+
+</body>
+</html>
