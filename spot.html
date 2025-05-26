@@ -1,0 +1,368 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>스팟 타임라인</title>
+  <style>
+    html, body {
+      margin: 0;
+      padding: 0;
+      font-family: 'Pretendard', sans-serif;
+      background-color: #fafafa;
+      max-width: 100vw;
+      overflow-x: hidden;
+    }
+
+    .topbar {
+      position: fixed;
+      top: 0; left: 0;
+      width: 100%; height: 52px;
+      background: white;
+      display: flex; justify-content: space-between; align-items: center;
+      padding: 0 16px;
+      z-index: 1000;
+      box-shadow: 0 1px 4px rgba(0,0,0,0.05);
+    }
+
+    .logo { height: 26px; }
+    .write-button {
+      font-size: 22px;
+      background: none;
+      border: none;
+      cursor: pointer;
+      line-height: 1;
+      padding: 4px;
+    }
+
+    .spot-header {
+      max-width: 600px;
+      margin: 72px auto 16px;
+      padding: 12px 16px;
+      text-align: center;
+      background: #fff;
+      border-bottom: 1px solid #eee;
+    }
+
+    .spot-owner {
+      font-weight: 600;
+      font-size: 16px;
+      margin-bottom: 8px;
+    }
+
+    .spot-icon-wrapper {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      margin: 8px auto;
+      width: 56px;
+      height: 56px;
+      border-radius: 50%;
+      border: 2px solid #86e0ff;
+    }
+
+    .spot-icon {
+      width: 40px;
+      height: 40px;
+    }
+
+    .spot-name {
+      font-weight: 600;
+      font-size: 15px;
+      margin-top: 8px;
+    }
+
+    .spot-count {
+      font-size: 13px;
+      color: #888;
+      margin-bottom: 4px;
+    }
+
+    .spot-desc {
+      font-size: 13px;
+      color: #444;
+      margin: 8px 0;
+    }
+
+    .edit-button {
+      background: #86e0ff;
+      color: white;
+      padding: 8px 16px;
+      border-radius: 24px;
+      border: none;
+      font-size: 14px;
+      font-weight: bold;
+      cursor: pointer;
+    }
+
+    #map-wrapper {
+      max-width: 600px;
+      margin: 0 auto;
+    }
+
+    #map {
+      width: 100%;
+      height: 200px;
+      border-bottom: 1px solid #eee;
+    }
+
+    .container {
+      max-width: 600px;
+      margin: 0 auto;
+      padding: 16px 16px 120px;
+    }
+
+    .card {
+      background: #fff;
+      border-radius: 12px;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+      margin-bottom: 16px;
+      overflow: hidden;
+    }
+
+    .card-header {
+      display: flex;
+      align-items: center;
+      padding: 10px 12px 0;
+    }
+
+    .profile-img {
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      object-fit: cover;
+      margin-right: 12px;
+    }
+
+    .writer-info {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .writer-name {
+      font-size: 14px;
+      font-weight: 600;
+      color: #222;
+    }
+
+    .location {
+      font-size: 12px;
+      color: #888;
+    }
+
+    .card-body {
+      padding: 10px 12px 12px;
+    }
+
+    .post-text {
+      font-size: 14px;
+      white-space: pre-line;
+      color: #333;
+      margin-bottom: 12px;
+    }
+
+    .post-img {
+      width: 100%;
+      display: block;
+      border-radius: 12px;
+      margin-bottom: 12px;
+    }
+
+    .post-actions {
+      font-size: 13px;
+      color: #555;
+      display: flex;
+      gap: 12px;
+    }
+
+    .navbar-img {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      width: 100%;
+      height: 64px;
+      object-fit: cover;
+      z-index: 1000;
+    }
+
+    .nav-btn {
+      position: fixed;
+      bottom: 14px;
+      width: 24px;
+      height: 24px;
+      z-index: 1002;
+      cursor: pointer;
+    }
+
+    .nav-btn img {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+    }
+
+    .nav-home { left: 10%; }
+    .nav-world { left: 30%; }
+    .nav-search { right: 30%; }
+    .nav-profile { right: 10%; }
+
+    .loading {
+      text-align: center;
+      padding: 100px 0;
+      font-size: 16px;
+      color: #aaa;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="topbar">
+    <img class="logo" src="mnt/data/spotcation.png" alt="Spotcation 로고" />
+    <button class="write-button" onclick="goToWrite()">✏️</button>
+  </div>
+
+  <div class="spot-header">
+    <div class="spot-owner">East_hyeun</div>
+    <div class="spot-icon-wrapper">
+      <img class="spot-icon" src="https://em-content.zobj.net/thumbs/120/apple/354/bomb_1f4a3.png" alt="스팟 아이콘" />
+    </div>
+    <div class="spot-name">기본스팟</div>
+    <div class="spot-count">0 게시물</div>
+    <div class="spot-desc">자취 시작하고 제일 자주 들른 곳.</div>
+    <button class="edit-button">spot 편집</button>
+  </div>
+
+  <div id="map-wrapper">
+    <div id="map"></div>
+  </div>
+
+  <div class="container" id="content">
+    <div class="loading">게시물 로딩 중...</div>
+  </div>
+
+  <img class="navbar-img" src="mnt/data/navbar-bg.png" alt="하단 바" />
+  <div class="nav-btn nav-home" onclick="goTo('home')">
+    <img src="mnt/data/home.png" alt="홈" />
+  </div>
+  <div class="nav-btn nav-world" onclick="goTo('world')">
+    <img src="mnt/data/world.png" alt="월드" />
+  </div>
+  <div class="nav-btn nav-search" onclick="goTo('search')">
+    <img src="mnt/data/search.png" alt="검색" />
+  </div>
+  <div class="nav-btn nav-profile" onclick="goTo('profile')">
+    <img src="mnt/data/profile.png" alt="프로필" />
+  </div>
+
+  <script>
+    const spotId = new URLSearchParams(location.search).get("id");
+    const BASE_API = "https://script.google.com/macros/s/AKfycbzbeySCfWFlZcnXAman8CMOcGf6sif5fOi-mNvEIDhBL3-4BuNpY8zFdwX7DrsG5oeNYQ/exec";
+    let map;
+
+    async function loadPosts() {
+      try {
+        const [postsRes, spotsRes] = await Promise.all([
+          fetch(`${BASE_API}?spot_id=${spotId}`),
+          fetch(`${BASE_API}?type=spots`)
+        ]);
+
+        const posts = await postsRes.json();
+        const spots = await spotsRes.json();
+
+        const spotMap = {};
+        let currentSpot = null;
+
+        spots.forEach(spot => {
+          spotMap[spot.id] = spot.name;
+          if (spot.id == spotId) currentSpot = spot;
+        });
+
+        if (currentSpot) {
+          initMap(currentSpot.lat, currentSpot.lng, currentSpot.name);
+          document.querySelector('.spot-name').textContent = currentSpot.name || '스팟';
+        }
+
+        document.querySelector('.spot-owner').textContent = 'East_hyeun';
+        document.querySelector('.spot-desc').textContent = currentSpot.description || '스팟 설명';
+        document.querySelector('.spot-count').textContent = posts.length + ' 게시물';
+
+        const contentEl = document.getElementById("content");
+        contentEl.innerHTML = "";
+
+        if (!posts || posts.length === 0) {
+          contentEl.innerHTML = "<div class='loading'>아직 게시물이 없습니다.</div>";
+          return;
+        }
+
+        posts.reverse().forEach(post => {
+          const profileImg = post.profile_image ? `mnt/data/${post.profile_image}` : 'mnt/data/default-profile.jpg';
+          const writer = post.writer_name || '익명';
+          const location = spotMap[post.spot_id] || '알 수 없는 장소';
+          const content = post.content || '(내용 없음)';
+          const hasImage = post.image_url && post.image_url.trim() !== "";
+          const imageTag = hasImage ? `<img class="post-img" src="mnt/data/${post.image_url}" alt="게시물 이미지" />` : "";
+
+          const card = `
+            <div class="card">
+              <div class="card-header">
+                <img class="profile-img" src="${profileImg}" alt="작성자 이미지" />
+                <div class="writer-info">
+                  <div class="writer-name">${writer}</div>
+                  <div class="location">${location}</div>
+                </div>
+              </div>
+              <div class="card-body">
+                <p class="post-text">${content}</p>
+                ${imageTag}
+                <div class="post-actions">
+                  <span>🤍 99</span>
+                  <span>💬 99</span>
+                </div>
+              </div>
+            </div>
+          `;
+          contentEl.innerHTML += card;
+        });
+      } catch (err) {
+        document.getElementById("content").innerHTML = "<div class='loading'>불러오는 중 오류 발생</div>";
+        console.error(err);
+      }
+    }
+
+    function initMap(lat, lng, name) {
+      map = new google.maps.Map(document.getElementById("map"), {
+        center: { lat: Number(lat), lng: Number(lng) },
+        zoom: 15,
+        mapId: "fb8c573bf9b6335d1b54e24d",
+        disableDefaultUI: true
+      });
+
+      new google.maps.marker.AdvancedMarkerElement({
+        map,
+        position: { lat: Number(lat), lng: Number(lng) },
+        title: name
+      });
+    }
+
+    function goTo(page) {
+      switch (page) {
+        case 'home': location.href = 'main.html'; break;
+        case 'world': location.href = 'world.html'; break;
+        case 'search': location.href = 'search.html'; break;
+        case 'profile': location.href = 'profile.html'; break;
+        default: alert('지원되지 않는 페이지입니다');
+      }
+    }
+
+    function goToWrite() {
+      location.href = `postCreate.html?id=${spotId}`;
+    }
+
+    loadPosts();
+  </script>
+
+  <script
+    src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDEAkXtSpbqxb3tHr360Dn2WGC-SAsNZao&callback=initMap&libraries=marker"
+    async defer></script>
+
+</body>
+</html>

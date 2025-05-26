@@ -10,6 +10,8 @@
       margin: 0;
       padding: 0;
       font-family: 'Pretendard', sans-serif;
+      max-width: 100vw;
+      overflow-x: hidden;
     }
 
     #map {
@@ -33,28 +35,28 @@
       justify-content: space-between;
       align-items: center;
       z-index: 1003;
-      box-shadow: 0 1px 4px rgba(0,0,0,0.05);
+      box-shadow: 0 1px 4px rgba(0, 0, 0, 0.05);
     }
 
     .topbar .logo {
-      height: 26px;
+      height: 24px;
       object-fit: contain;
     }
 
     .topbar .bell {
-      height: 24px;
-      width: 24px;
+      height: 22px;
+      width: 22px;
       object-fit: contain;
       cursor: pointer;
     }
 
     .nav-center-button {
       position: fixed;
-      bottom: 30px;
+      bottom: 70px;
       left: 50%;
       transform: translateX(-50%);
-      width: 64px;
-      height: 64px;
+      width: 56px;
+      height: 56px;
       z-index: 1001;
       cursor: pointer;
     }
@@ -70,16 +72,16 @@
       bottom: 0;
       left: 0;
       width: 100%;
-      height: 80px;
+      height: 64px;
       object-fit: cover;
       z-index: 1000;
     }
 
     .nav-btn {
       position: fixed;
-      bottom: 18px;
-      width: 28px;
-      height: 28px;
+      bottom: 16px;
+      width: 24px;
+      height: 24px;
       z-index: 1002;
       cursor: pointer;
     }
@@ -90,32 +92,38 @@
       object-fit: contain;
     }
 
-    .nav-home    { left: 10%; }
-    .nav-world   { left: 30%; }
-    .nav-search  { right: 30%; }
-    .nav-profile { right: 10%; }
+    .nav-home {
+      left: 10%;
+    }
+
+    .nav-world {
+      left: 30%;
+    }
+
+    .nav-search {
+      right: 30%;
+    }
+
+    .nav-profile {
+      right: 10%;
+    }
   </style>
 </head>
 <body>
 
-  <!-- 상단 탑바 -->
   <div class="topbar">
     <img src="mnt/data/spotcation.png" alt="Spotcation 로고" class="logo" />
     <img src="mnt/data/bell-icon.png" alt="알림" class="bell" />
   </div>
 
-  <!-- 지도 -->
   <div id="map"></div>
 
-  <!-- 플로팅 버튼 -->
   <div class="nav-center-button" onclick="goToCreateSpot()">
     <img src="mnt/data/center-button.png" alt="스팟 생성" />
   </div>
 
-  <!-- 네비게이션 바 배경 -->
   <img class="navbar-img" src="mnt/data/navbar-bg.png" alt="하단 바" />
 
-  <!-- 버튼들 -->
   <div class="nav-btn nav-home" onclick="goTo('home')">
     <img src="mnt/data/home.png" alt="홈" />
   </div>
@@ -129,29 +137,67 @@
     <img src="mnt/data/profile.png" alt="프로필" />
   </div>
 
-  <!-- 지도 스크립트 -->
   <script>
     let map;
 
+    const SPOT_API_URL = "https://script.google.com/macros/s/AKfycbzByG7_rbUV4LVXYrF3vgzQeZCexwCFT0jO6ibV1Q4DXZsMctkuoEOkw_6IRL0tPODjSg/exec";
+
+    const iconMap = {
+      1: "📍", 2: "🍔", 3: "🏞️", 4: "🎵", 5: "📸",
+      6: "🛍️", 7: "🏨", 8: "⛺️", 9: "🎡", 10: "🐶"
+    };
+
+    function createStyledEmojiMarker(emoji) {
+      const div = document.createElement("div");
+      div.style.width = "24px";
+      div.style.height = "24px";
+      div.style.borderRadius = "50%";
+      div.style.background = "rgba(255, 255, 255, 0.7)";
+      div.style.display = "flex";
+      div.style.alignItems = "center";
+      div.style.justifyContent = "center";
+      div.style.fontSize = "16px";
+      div.style.fontWeight = "bold";
+      div.innerText = emoji;
+      return div;
+    }
+
+    async function loadSpots() {
+      try {
+        const res = await fetch(SPOT_API_URL);
+        const spots = await res.json();
+
+        spots.forEach(spot => {
+          const iconId = Number(spot.icon);
+          const emoji = iconMap[iconId];
+          const lat = Number(spot.lat);
+          const lng = Number(spot.lng);
+
+          if (!emoji || isNaN(lat) || isNaN(lng)) return;
+
+          const marker = new google.maps.marker.AdvancedMarkerElement({
+            map: map,
+            position: { lat, lng },
+            title: spot.name,
+            content: createStyledEmojiMarker(emoji),
+            gmpClickable: true
+          });
+
+          marker.addListener("click", () => {
+            window.location.href = `spot.html?id=${spot.id}`;
+          });
+        });
+      } catch (err) {
+        console.error("❌ 스팟 로딩 실패:", err);
+      }
+    }
+
     function initMap() {
       map = new google.maps.Map(document.getElementById("map"), {
-        center: { lat: 37.5665, lng: 126.9780 },
-        zoom: 15,
-        disableDefaultUI: true,
-        styles: [
-          {
-            elementType: "labels.icon",
-            stylers: [{ visibility: "off" }]
-          },
-          {
-            elementType: "labels.text.fill",
-            stylers: [{ visibility: "off" }]
-          },
-          {
-            elementType: "labels.text.stroke",
-            stylers: [{ visibility: "off" }]
-          }
-        ]
+        center: { lat: 37.4, lng: 127.1 },
+        zoom: 13,
+        mapId: "fb8c573bf9b6335d1b54e24d",
+        disableDefaultUI: true
       });
 
       if (navigator.geolocation) {
@@ -161,23 +207,20 @@
               lat: position.coords.latitude,
               lng: position.coords.longitude
             };
-            console.log("✅ 위치 받아옴:", pos);
             map.setCenter(pos);
 
             new google.maps.Marker({
               position: pos,
               map: map,
-              title: "현재 위치",
-              icon: "mnt/data/current-location.png" // 🔄 사용자 아이콘으로 교체됨
+              title: "현재 위치"
             });
+
+            loadSpots();
           },
-          (error) => {
-            console.error("❌ 위치 오류:", error);
-            alert(`위치 오류 발생: ${error.message}`);
-          }
+          () => loadSpots()
         );
       } else {
-        console.warn("❌ 이 브라우저는 Geolocation을 지원하지 않습니다.");
+        loadSpots();
       }
     }
 
@@ -190,10 +233,10 @@
     }
   </script>
 
-  <!-- Google Maps API -->
   <script
-    src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAgZyXb3d5ZtAv03EPyf9OVvu51cvTCqQw&callback=initMap"
+    src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDEAkXtSpbqxb3tHr360Dn2WGC-SAsNZao&callback=initMap&libraries=marker"
     async defer>
   </script>
+
 </body>
 </html>
