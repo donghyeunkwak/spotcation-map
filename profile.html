@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0" />
+  <title>Spotcation - 프로필</title>
+  <style>
+    html, body {
+      margin: 0;
+      padding: 0;
+      font-family: 'Pretendard', sans-serif;
+      width: 100%;
+      height: 100%;
+      overflow-x: hidden;
+      background-color: #fff;
+    }
+
+    .top-tabs {
+      display: flex;
+      justify-content: center;
+      padding: 10px 0;
+      background-color: #fff;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      z-index: 1001;
+      /* box-shadow 제거해서 경계선 없앰 */
+      border-bottom: none;
+    }
+
+    .tab-button {
+      font-size: 14px;
+      padding: 6px 16px;
+      border: none;
+      border-radius: 20px;
+      margin: 0 5px;
+      cursor: pointer;
+    }
+
+    .active-tab {
+      background-color: #007BFF;
+      color: #fff;
+    }
+
+    .inactive-tab {
+      background-color: #eee;
+      color: #555;
+    }
+
+    .profile-info {
+      display: flex;
+      align-items: center;
+      padding: 56px 16px 12px; /* 상단 패딩 줄임 (64 → 56) */
+    }
+
+    .profile-info img {
+      width: 56px;
+      height: 56px;
+      border-radius: 50%;
+      object-fit: cover;
+    }
+
+    .profile-details {
+      margin-left: 12px;
+    }
+
+    .nickname {
+      font-size: 16px;
+      font-weight: bold;
+    }
+
+    .counts {
+      font-size: 13px;
+      color: #666;
+      margin-top: 2px;
+    }
+
+    #map {
+      width: 100%;
+      height: calc(100vh - 56px - 56px - 64px); /* 탭 + 프로필 + 네비바 */
+    }
+
+    .nav-center-button {
+      position: fixed;
+      bottom: 70px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 56px;
+      height: 56px;
+      z-index: 1001;
+      cursor: pointer;
+    }
+
+    .nav-center-button img {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+    }
+
+    .navbar-img {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      width: 100%;
+      height: 64px;
+      object-fit: cover;
+      z-index: 1000;
+    }
+
+    .nav-btn {
+      position: fixed;
+      bottom: 16px;
+      width: 24px;
+      height: 24px;
+      z-index: 1002;
+      cursor: pointer;
+    }
+
+    .nav-btn img {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+    }
+
+    .nav-home { left: 10%; }
+    .nav-world { left: 30%; }
+    .nav-search { right: 30%; }
+    .nav-profile { right: 10%; }
+  </style>
+</head>
+<body>
+
+  <!-- 상단 탭 -->
+  <div class="top-tabs">
+    <button class="tab-button active-tab">내 피드</button>
+    <button class="tab-button inactive-tab">설정</button>
+  </div>
+
+  <!-- 프로필 정보 -->
+  <div class="profile-info">
+    <img src="profile_image1.jpg" alt="프로필">
+    <div class="profile-details">
+      <div class="nickname">East_hyeun</div>
+      <div class="counts">스팟 1 | 팔로워 0 | 팔로잉 0</div>
+    </div>
+  </div>
+
+  <!-- 지도 -->
+  <div id="map"></div>
+
+  <!-- 하단 네비게이션바 -->
+  <div class="nav-center-button" onclick="goToCreateSpot()">
+    <img src="mnt/data/center-button.png" alt="스팟 생성" />
+  </div>
+
+  <img class="navbar-img" src="mnt/data/navbar-bg.png" alt="하단 바" />
+
+  <div class="nav-btn nav-home" onclick="goTo('home')">
+    <img src="mnt/data/home.png" alt="홈" />
+  </div>
+  <div class="nav-btn nav-world" onclick="goTo('timeline')">
+    <img src="mnt/data/timeline.png" alt="타임라인" />
+  </div>
+  <div class="nav-btn nav-search" onclick="goTo('search')">
+    <img src="mnt/data/search.png" alt="검색" />
+  </div>
+  <div class="nav-btn nav-profile" onclick="goTo('profile')">
+    <img src="mnt/data/profile.png" alt="프로필" />
+  </div>
+
+  <script>
+    let map;
+
+    function initMap() {
+      map = new google.maps.Map(document.getElementById("map"), {
+        center: { lat: 37.4, lng: 127.1 },
+        zoom: 13,
+        mapId: "fb8c573bf9b6335d1b54e24d",
+        disableDefaultUI: true
+      });
+
+      if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition(
+          (position) => {
+            const pos = {
+              lat: position.coords.latitude,
+              lng: position.coords.longitude
+            };
+            map.setCenter(pos);
+            new google.maps.Marker({
+              position: pos,
+              map: map,
+              title: "현재 위치"
+            });
+          },
+          () => console.warn("위치 권한 없음")
+        );
+      }
+    }
+
+    function goToCreateSpot() {
+      window.location.href = "spotCreate.html";
+    }
+
+    function goTo(page) {
+      switch (page) {
+        case 'home': location.href = 'main.html'; break;
+        case 'timeline': location.href = 'timeline.html'; break;
+        case 'search': location.href = 'search.html'; break;
+        case 'profile': location.href = 'profile.html'; break;
+        default: alert('알 수 없는 경로');
+      }
+    }
+  </script>
+
+  <script
+    src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDEAkXtSpbqxb3tHr360Dn2WGC-SAsNZao&callback=initMap&libraries=marker"
+    async defer>
+  </script>
+
+</body>
+</html>
