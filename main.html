@@ -92,21 +92,10 @@
       object-fit: contain;
     }
 
-    .nav-home {
-      left: 10%;
-    }
-
-    .nav-world {
-      left: 30%;
-    }
-
-    .nav-search {
-      right: 30%;
-    }
-
-    .nav-profile {
-      right: 10%;
-    }
+    .nav-home { left: 10%; }
+    .nav-world { left: 30%; }
+    .nav-search { right: 30%; }
+    .nav-profile { right: 10%; }
   </style>
 </head>
 <body>
@@ -127,8 +116,8 @@
   <div class="nav-btn nav-home" onclick="goTo('home')">
     <img src="mnt/data/home.png" alt="홈" />
   </div>
-  <div class="nav-btn nav-world" onclick="goTo('world')">
-    <img src="mnt/data/world.png" alt="월드" />
+  <div class="nav-btn nav-world" onclick="goTo('timeline')">
+    <img src="mnt/data/timeline.png" alt="타임라인" />
   </div>
   <div class="nav-btn nav-search" onclick="goTo('search')">
     <img src="mnt/data/search.png" alt="검색" />
@@ -149,14 +138,14 @@
 
     function createStyledEmojiMarker(emoji) {
       const div = document.createElement("div");
-      div.style.width = "32px";
-      div.style.height = "32px";
+      div.style.width = "24px";
+      div.style.height = "24px";
       div.style.borderRadius = "50%";
       div.style.background = "rgba(255, 255, 255, 0.7)";
       div.style.display = "flex";
       div.style.alignItems = "center";
       div.style.justifyContent = "center";
-      div.style.fontSize = "32px";
+      div.style.fontSize = "16px";
       div.style.fontWeight = "bold";
       div.innerText = emoji;
       return div;
@@ -229,7 +218,13 @@
     }
 
     function goTo(page) {
-      alert(`${page}로 이동`);
+      switch (page) {
+        case 'home': location.href = 'main.html'; break;
+        case 'timeline': location.href = 'timeline.html'; break;
+        case 'search': location.href = 'search.html'; break;
+        case 'profile': location.href = 'profile.html'; break;
+        default: alert('지원되지 않는 페이지입니다');
+      }
     }
   </script>
 

@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>타임라인 피드</title>
+  <style>
+    body {
+      margin: 0;
+      font-family: 'Pretendard', sans-serif;
+      background: #fafafa;
+      padding-bottom: 100px;
+      max-width: 100vw;
+      overflow-x: hidden;
+    }
+
+    .topbar {
+      position: fixed;
+      top: 0;
+      width: 100%;
+      height: 52px;
+      background: white;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 16px;
+      box-shadow: 0 1px 4px rgba(0, 0, 0, 0.05);
+      z-index: 1000;
+    }
+
+    .logo {
+      height: 24px;
+    }
+
+    .container {
+      max-width: 600px;
+      margin: 72px auto 0;
+      padding: 0 16px;
+    }
+
+    .card {
+      background: white;
+      border-radius: 12px;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+      margin-bottom: 16px;
+      overflow: hidden;
+    }
+
+    .card-header {
+      display: flex;
+      align-items: center;
+      padding: 10px 12px 0;
+    }
+
+    .profile-img {
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      object-fit: cover;
+      margin-right: 12px;
+    }
+
+    .writer-info {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .writer-name {
+      font-size: 14px;
+      font-weight: bold;
+    }
+
+    .location {
+      font-size: 12px;
+      color: #888;
+    }
+
+    .card-body {
+      padding: 10px 12px 12px;
+    }
+
+    .post-text {
+      font-size: 14px;
+      white-space: pre-line;
+      margin-bottom: 10px;
+    }
+
+    .post-img {
+      width: 100%;
+      border-radius: 12px;
+    }
+
+    .post-actions {
+      font-size: 13px;
+      color: #555;
+      display: flex;
+      gap: 12px;
+    }
+
+    .navbar-img {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      width: 100%;
+      height: 64px;
+      object-fit: cover;
+      z-index: 1000;
+    }
+
+    .nav-btn {
+      position: fixed;
+      bottom: 16px;
+      width: 24px;
+      height: 24px;
+      z-index: 1002;
+      cursor: pointer;
+    }
+
+    .nav-btn img {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+    }
+
+    .nav-home { left: 10%; }
+    .nav-world { left: 30%; }
+    .nav-search { right: 30%; }
+    .nav-profile { right: 10%; }
+  </style>
+</head>
+<body>
+  <div class="topbar">
+    <img class="logo" src="mnt/data/spotcation.png" alt="Spotcation 로고" />
+  </div>
+
+  <div class="container" id="feed">
+    <div class="loading">게시물 로딩 중...</div>
+  </div>
+
+  <img class="navbar-img" src="mnt/data/navbar-bg.png" alt="하단 바" />
+  <div class="nav-btn nav-home" onclick="goTo('home')">
+    <img src="mnt/data/home.png" alt="홈" />
+  </div>
+  <div class="nav-btn nav-world" onclick="goTo('timeline')">
+    <img src="mnt/data/timeline.png" alt="타임라인" />
+  </div>
+  <div class="nav-btn nav-search" onclick="goTo('search')">
+    <img src="mnt/data/search.png" alt="검색" />
+  </div>
+  <div class="nav-btn nav-profile" onclick="goTo('profile')">
+    <img src="mnt/data/profile.png" alt="프로필" />
+  </div>
+
+  <script>
+    const BASE_API = "https://script.google.com/macros/s/AKfycbzbeySCfWFlZcnXAman8CMOcGf6sif5fOi-mNvEIDhBL3-4BuNpY8zFdwX7DrsG5oeNYQ/exec";
+
+    function goTo(page) {
+      switch (page) {
+        case 'home': location.href = 'main.html'; break;
+        case 'timeline': location.href = 'timeline.html'; break;
+        case 'search': location.href = 'search.html'; break;
+        case 'profile': location.href = 'profile.html'; break;
+        default: alert('지원되지 않는 페이지입니다');
+      }
+    }
+
+    async function loadAllPosts() {
+      try {
+        const [postsRes, spotsRes] = await Promise.all([
+          fetch(BASE_API),
+          fetch(BASE_API + '?type=spots')
+        ]);
+
+        const posts = await postsRes.json();
+        const spots = await spotsRes.json();
+
+        const spotMap = {};
+        spots.forEach(spot => spotMap[spot.id] = spot.name);
+
+        const container = document.getElementById('feed');
+        container.innerHTML = '';
+
+        if (!posts || posts.length === 0) {
+          container.innerHTML = '<div class="loading">아직 게시물이 없습니다.</div>';
+          return;
+        }
+
+        posts.reverse().forEach(post => {
+          const profileImg = post.profile_image ? `mnt/data/${post.profile_image}` : 'mnt/data/default-profile.jpg';
+          const writer = post.writer_name || '익명';
+          const location = spotMap[post.spot_id] || '알 수 없는 장소';
+          const content = post.content || '(내용 없음)';
+          const hasImage = post.image_url && post.image_url.trim() !== "";
+          const imageTag = hasImage ? `<img class="post-img" src="mnt/data/${post.image_url}" alt="게시물 이미지" />` : "";
+
+          const card = `
+            <div class="card">
+              <div class="card-header">
+                <img class="profile-img" src="${profileImg}" alt="작성자 이미지" />
+                <div class="writer-info">
+                  <div class="writer-name">${writer}</div>
+                  <div class="location">${location}</div>
+                </div>
+              </div>
+              <div class="card-body">
+                <p class="post-text">${content}</p>
+                ${imageTag}
+                <div class="post-actions">
+                  <span>🤍 99</span>
+                  <span>💬 99</span>
+                </div>
+              </div>
+            </div>
+          `;
+          container.innerHTML += card;
+        });
+      } catch (err) {
+        document.getElementById('feed').innerHTML = '<div class="loading">불러오는 중 오류 발생</div>';
+        console.error(err);
+      }
+    }
+
+    loadAllPosts();
+  </script>
+</body>
+</html>
