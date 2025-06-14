@@ -15,24 +15,27 @@
     }
 
     .topbar {
-      position: fixed;
-      top: 0; left: 0;
-      width: 100%; height: 52px;
-      background: white;
-      display: flex; justify-content: space-between; align-items: center;
-      padding: 0 16px;
-      z-index: 1000;
-      box-shadow: 0 1px 4px rgba(0,0,0,0.05);
-    }
+  position: sticky;
+  top: 0;
+  width: 100%;
+  height: 52px;
+  padding: 0 16px;
+  background-color: white;
+  z-index: 1003;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.05);
+
+  /* ⛳️ 요거 두 줄 추가해줘야 함 */
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  box-sizing: border-box;
+}
 
     .logo { height: 26px; }
     .write-button {
-      font-size: 22px;
-      background: none;
-      border: none;
+      height: 22px;
+      width: 22px;
       cursor: pointer;
-      line-height: 1;
-      padding: 4px;
     }
 
     .spot-header {
@@ -244,7 +247,7 @@
     <img src="mnt/data/home.png" alt="홈" />
   </div>
   <div class="nav-btn nav-world" onclick="goTo('world')">
-    <img src="mnt/data/world.png" alt="월드" />
+    <img src="mnt/data/timeline.png" alt="월드" />
   </div>
   <div class="nav-btn nav-search" onclick="goTo('search')">
     <img src="mnt/data/search.png" alt="검색" />
@@ -346,7 +349,7 @@
     function goTo(page) {
       switch (page) {
         case 'home': location.href = 'main.html'; break;
-        case 'world': location.href = 'world.html'; break;
+        case 'world': location.href = 'timeline.html'; break;
         case 'search': location.href = 'search.html'; break;
         case 'profile': location.href = 'profile.html'; break;
         default: alert('지원되지 않는 페이지입니다');

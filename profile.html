@@ -127,6 +127,12 @@
     .nav-world { left: 30%; }
     .nav-search { right: 30%; }
     .nav-profile { right: 10%; }
+   
+    .nav-profile img {
+  border-radius: 50%;          /* ✅ 원형 만들기 */
+  border: 1px solid #ccc;      /* (선택) 테두리 추가 */
+  object-fit: cover;           /* ✅ 이미지 잘리지 않도록 */
+}
   </style>
 </head>
 <body>
@@ -139,7 +145,7 @@
 
   <!-- 프로필 정보 -->
   <div class="profile-info">
-    <img src="profile_image1.jpg" alt="프로필">
+    <img src="mnt/data/profile_image1.jpg" alt="프로필">
     <div class="profile-details">
       <div class="nickname">East_hyeun</div>
       <div class="counts">스팟 1 | 팔로워 0 | 팔로잉 0</div>

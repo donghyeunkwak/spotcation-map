@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Spotcation - 검색</title>
+  <style>
+    body {
+      font-family: 'Pretendard', sans-serif;
+      margin: 0;
+      padding: 0;
+      background: #fff;
+    }
+
+    /* 📌 탑바 */
+    .topbar {
+      position: sticky;
+      top: 0;
+      width: 100%;
+      height: 52px;
+      padding: 0 16px;
+      background-color: white;
+      z-index: 1003;
+      box-shadow: 0 1px 4px rgba(0, 0, 0, 0.05);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      box-sizing: border-box;
+    }
+
+    .topbar .logo {
+      height: 24px;
+    }
+
+    .topbar .bell {
+      height: 22px;
+      width: 22px;
+      cursor: pointer;
+    }
+
+    /* 📌 검색창 */
+    .container {
+      padding: 12px 16px 80px; /* 하단 네비 고려 */
+    }
+
+    .search-box {
+      width: 100%;
+      padding: 10px 14px;
+      font-size: 14px;
+      border: 1px solid #ccc;
+      border-radius: 12px;
+      background: #f2f2f2;
+      box-sizing: border-box;
+    }
+
+    .result-list {
+      margin-top: 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .user-item {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 8px 0;
+      border-bottom: 1px solid #eee;
+    }
+
+    .user-item img {
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      object-fit: cover;
+    }
+
+    .user-item .nickname {
+      font-size: 15px;
+      font-weight: 500;
+    }
+
+    /* 📌 스팟 생성 버튼 */
+    :root {
+      --spot-button-bottom: 75px;
+    }
+
+    .nav-center-button {
+      position: fixed;
+      bottom: var(--spot-button-bottom);
+      left: 50%;
+      transform: translateX(-50%);
+      width: 56px;
+      height: 56px;
+      z-index: 1001;
+      cursor: pointer;
+    }
+
+    .nav-center-button img {
+      width: 100%;
+      height: 100%;
+    }
+
+    /* 📌 하단 네비게이션 */
+    .navbar-img {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      width: 100%;
+      height: 64px;
+      object-fit: cover;
+      z-index: 1000;
+    }
+
+    .nav-btn {
+      position: fixed;
+      bottom: 20px;
+      width: 28px;
+      height: 28px;
+      z-index: 1002;
+      cursor: pointer;
+    }
+
+    .nav-btn img {
+      width: 100%;
+      height: 100%;
+    }
+
+    .nav-home { left: 10%; }
+    .nav-world { left: 30%; }
+    .nav-search { right: 30%; }
+    .nav-profile { right: 10%; }
+    .nav-profile img {
+      border-radius: 50%;
+      object-fit: cover;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- 🔝 탑바 -->
+  <div class="topbar">
+    <img class="logo" src="mnt/data/spotcation.png" alt="로고" />
+    <img class="bell" src="mnt/data/bell-icon.png" alt="알림" />
+  </div>
+
+  <!-- 🔍 검색창 -->
+  <div class="container">
+    <input
+      type="text"
+      id="searchInput"
+      class="search-box"
+      placeholder="유저 검색"
+      oninput="filterUsers()"
+    />
+    <div class="result-list" id="resultList"></div>
+  </div>
+
+
+
+  <!-- 🔽 하단 네비 이미지 -->
+  <img class="navbar-img" src="mnt/data/navbar-bg.png" alt="navbar" />
+
+  <!-- ⬇️ 네비 버튼들 -->
+  <div class="nav-btn nav-home" onclick="goTo('main.html')">
+    <img src="mnt/data/home.png" />
+  </div>
+  <div class="nav-btn nav-world" onclick="goTo('timeline.html')">
+    <img src="mnt/data/timeline.png" />
+  </div>
+  <div class="nav-btn nav-search">
+    <img src="mnt/data/search.png" />
+  </div>
+  <div class="nav-btn nav-profile" onclick="goTo('profile.html')">
+    <img src="mnt/data/profile.png" />
+  </div>
+
+  <script>
+    const dummyUsers = [
+      { nickname: "곽스타", avatar: "https://i.pravatar.cc/150?img=1" },
+      { nickname: "spothero", avatar: "https://i.pravatar.cc/150?img=2" },
+      { nickname: "동현이짱", avatar: "https://i.pravatar.cc/150?img=3" },
+      { nickname: "감성러버", avatar: "https://i.pravatar.cc/150?img=4" },
+      { nickname: "spot_girl", avatar: "https://i.pravatar.cc/150?img=5" }
+    ];
+
+    function filterUsers() {
+      const keyword = document.getElementById("searchInput").value.toLowerCase();
+      const list = document.getElementById("resultList");
+      list.innerHTML = "";
+
+      const filtered = dummyUsers.filter(user =>
+        user.nickname.toLowerCase().includes(keyword)
+      );
+
+      filtered.forEach(user => {
+        const div = document.createElement("div");
+        div.className = "user-item";
+        div.innerHTML = `
+          <img src="${user.avatar}" />
+          <div class="nickname">${user.nickname}</div>
+        `;
+        list.appendChild(div);
+      });
+
+      if (filtered.length === 0 && keyword) {
+        list.innerHTML = `<div style="color:#888; text-align:center;">검색 결과 없음</div>`;
+      }
+    }
+
+    function goToCreateSpot() {
+      window.location.href = "createspot.html";
+    }
+
+    function goTo(page) {
+      window.location.href = page;
+    }
+
+    // 초기에 유저 목록 보여줌
+    filterUsers();
+  </script>
+</body>
+</html>

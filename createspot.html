@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>스팟 생성</title>
+  <style>
+    body {
+      font-family: 'Pretendard', sans-serif;
+      margin: 0;
+      padding: 0;
+      background: #f9f9f9;
+    }
+
+    .topbar {
+      position: sticky;
+      top: 0;
+      background: white;
+      height: 52px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 16px;
+      box-shadow: 0 1px 4px rgba(0,0,0,0.05);
+      z-index: 100;
+    }
+
+    .topbar .title {
+      font-size: 16px;
+      font-weight: bold;
+    }
+
+    .form {
+      padding: 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    input, textarea {
+      width: 100%;
+      padding: 10px;
+      font-size: 14px;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+      box-sizing: border-box;
+    }
+
+    .emoji-list {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    .emoji-option {
+      font-size: 24px;
+      padding: 8px;
+      border: 2px solid transparent;
+      border-radius: 8px;
+      cursor: pointer;
+    }
+
+    .emoji-option.selected {
+      border-color: #00aaff;
+      background: #e5f8ff;
+    }
+
+    button {
+      padding: 12px;
+      background: #00aaff;
+      color: white;
+      font-weight: bold;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 16px;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="topbar">
+    <div onclick="history.back()" style="cursor: pointer;">←</div>
+    <div class="title">스팟 생성</div>
+    <div style="width: 20px;"></div>
+  </div>
+
+  <form class="form" onsubmit="handleCreate(event)">
+    <input type="text" id="spotName" placeholder="스팟 이름" required />
+    <textarea id="spotDesc" placeholder="스팟 설명" rows="3"></textarea>
+
+    <div class="emoji-list" id="emojiList"></div>
+
+    <button type="submit">스팟 생성하기</button>
+  </form>
+
+  <script>
+    const emojis = ["📍", "🍔", "🏞️", "🎵", "📸", "🛍️", "🏨", "⛺️", "🎡", "🐶"];
+    let selectedEmoji = emojis[0];
+
+    const emojiList = document.getElementById("emojiList");
+
+    emojis.forEach(emoji => {
+      const span = document.createElement("span");
+      span.className = "emoji-option";
+      span.textContent = emoji;
+      span.onclick = () => {
+        selectedEmoji = emoji;
+        document.querySelectorAll(".emoji-option").forEach(e => e.classList.remove("selected"));
+        span.classList.add("selected");
+      };
+      if (emoji === selectedEmoji) span.classList.add("selected");
+      emojiList.appendChild(span);
+    });
+
+    function handleCreate(e) {
+      e.preventDefault();
+      const name = document.getElementById("spotName").value;
+      const desc = document.getElementById("spotDesc").value;
+
+      console.log("🆕 스팟 생성:", { name, desc, emoji: selectedEmoji });
+
+      // 이후 저장 처리 또는 API 연동 가능
+      alert("스팟이 생성되었습니다!");
+      location.href = "main.html";
+    }
+  </script>
+
+</body>
+</html>
+
