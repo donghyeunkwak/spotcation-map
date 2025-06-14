@@ -5,15 +5,18 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0" />
   <title>Spotcation - 메인</title>
   <style>
-    html, body {
-      height: 100%;
-      margin: 0;
-      padding: 0;
-      font-family: 'Pretendard', sans-serif;
-      max-width: 100vw;
-      overflow-x: hidden;
-      -webkit-tap-highlight-color: transparent;
-    }
+  html, body {
+  margin: 0;
+  padding: 0;
+  height: 100%;
+  width: 100%;
+  max-width: 100vw;
+  font-family: 'Pretendard', sans-serif;
+  overflow-x: hidden;
+  -webkit-tap-highlight-color: transparent;
+  background-color: #fff; /* or whatever base you use */
+}
+
 
     #map {
       height: 100%;
@@ -311,7 +314,7 @@
 
     function goTo(page) {
       switch (page) {
-        case 'home': location.href = 'maㅌin.html'; break;
+        case 'home': location.href = 'main.html'; break;
         case 'timeline': location.href = 'timeline.html'; break;
         case 'search': location.href = 'search.html'; break;
         case 'profile': location.href = 'profile.html'; break;
